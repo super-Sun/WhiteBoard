@@ -1,0 +1,7 @@
+platform :ios, '7.0'
+pod 'AFNetworking'
+pod 'CocoaAsyncSocket'
+pod 'MJExtension'
+pod 'SIAlertView'
+pod 'objective-zip', '~> 1.0'
+
