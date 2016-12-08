@@ -3,7 +3,7 @@
 //  10-画板
 //
 //  Created by sunluwei on 16/11/9.
-//  Copyright © 2016年 小码哥. All rights reserved.
+//  Copyright © 2016年 scooper. All rights reserved.
 //
 
 #import "ConnectTool.h"
@@ -885,22 +885,97 @@
             
             //1.包装成字典，把id、point
             //发送通知
-            NSDictionary *dictData = @{@"data": draw, @"msg":@"改变位置", @"code":MSG_ColorCHANGE};
+            NSDictionary *dictData = @{@"data": draw, @"msg":@"改变位置", @"code":MSG_COLORCHANGE};
             
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"DidReceiveDataFromSever" object:nil userInfo:dictData];
             });
-            
-
-            
-            
+        
         } else if(infoStruct2->CommandID == 9) {
             //改变字体
         } else if(infoStruct2->CommandID == 10) {
             //修改线宽
+            //改变颜色
+            Draw *draw = [[Draw alloc] init];
+            //初始化结构体
+            struct WidthChange pan;
+            
+            int IdCount = (int)(nsdataFromBase64String.length - 12) / 4;
+            NSLog(@"idCount%d", IdCount);
+            
+            [nsdataFromBase64String getBytes:&pan length:nsdataFromBase64String.length];
+            
+            if (IdCount > 0) {
+                //
+                NSMutableArray *array = [NSMutableArray array];
+                
+                for (int i = 0; i < IdCount; i++) {
+                    //
+                    NSLog(@"id:%d", pan.ObjIDs[i]);
+                    
+                    int objID = pan.ObjIDs[i];
+                    
+                    [array addObject:[NSNumber numberWithInt:objID]];
+                    
+                }
+                draw.ObjIds = array;
+            }
+            
+            draw.lineWidth = pan.nLineWidth;
+            
+            draw.ObjId = pan.ObjID;
+            
+            //1.包装成字典，把id、point
+            //发送通知
+            NSDictionary *dictData = @{@"data": draw, @"msg":@"改变位置", @"code":MSG_WIDTHCHANGE};
+            
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"DidReceiveDataFromSever" object:nil userInfo:dictData];
+            });
+
         } else if(infoStruct2->CommandID == 11) {
             //修改文本内容
+            Draw *draw = [[Draw alloc] init];
+            //结构体容器
+            struct TextChange pan;
+            //结构体内-清空多余空间
+            memset(&pan, 0, sizeof(struct TextChange));
+            //用结构体去接收data数据
+            [nsdataFromBase64String getBytes:&pan length:nsdataFromBase64String.length];
+            //有效的字节长度
+            int len = nsdataFromBase64String.length - 4 * 3;
+            Byte byte[len];
+            memset(byte, 0, len);
+            //将有效字节存入byte[]
+            for (int i = 0; i < len; i++) {
+                
+                byte[i] = pan.pData[i];
+                
+            }
+            //自定义编码方式GBK
+            NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
+            
+            //byte -> string
+            NSString* str = [[NSString alloc]initWithBytes:byte length:len encoding:enc];
+            
+            NSLog(@"str = %@",str);
+            
+            if (str != nil) {
+                //
+                draw.ObjId = pan.ObjId;
+                draw.text = str;
+                
+                //发送通知
+                NSDictionary *dictData = @{@"data": draw, @"msg":@"文字", @"code":MSG_TEXTCHANGE};
+                
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"DidReceiveDataFromSever" object:nil userInfo:dictData];
+                });
+            }
+
         } else if(infoStruct2->CommandID == 12) {
             //手型指针操作
         } else if(infoStruct2->CommandID == 13) {
@@ -1023,7 +1098,7 @@
                 break;
         }
         //设置画笔颜色
-        draw.color = [UIColor colorWithRed:red / 255.0 green:green / 255.0 blue:blue / 255.0 alpha:1];
+        draw.color = [self colorWithDWORD:pan.dwColor andAlpha:1.0];
         //设置画笔宽度
         draw.lineWidth = pan.nLineWidth;
         
@@ -1068,16 +1143,7 @@
         NSString* str = [[NSString alloc]initWithBytes:byte length:pan.nCount encoding:enc];
         
         NSLog(@"str = %@",str);
-        
-        
-        
-//        NSString *str = [self convertDataToHexStr:strData];
-        //c0b4c1cb
-//        NSString *str = [[NSString alloc] initWithBytes:byte length:2 encoding:NSUTF8StringEncoding];
-        
-//        NSString *str = [[NSString alloc] initWithUTF8String:(char *)byte];
-//        NSLog(@"str:------%@",str);
-        //≈
+
         if (str != nil) {
             //
             draw.ObjId = pan.ObjID;

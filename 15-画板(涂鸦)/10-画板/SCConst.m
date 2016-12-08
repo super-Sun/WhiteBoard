@@ -3,7 +3,7 @@
 //  10-画板
 //
 //  Created by sunluwei on 16/11/17.
-//  Copyright © 2016年 小码哥. All rights reserved.
+//  Copyright © 2016年 scooper. All rights reserved.
 //
 
 #import "SCConst.h"
@@ -24,25 +24,25 @@ NSString *const MSG_LOCCHANGE = @"6";
 /**大小改变*/
 NSString *const MSG_SIZECHANGE = @"7";
 /**颜色改变*/
-NSString *const MSG_ColorCHANGE = @"8";
+NSString *const MSG_COLORCHANGE = @"8";
 /**字体改变*/
-NSString *const MSG_FontCHANGE = @"9";
+NSString *const MSG_FONTCHANGE = @"9";
 /**线宽改变*/
-NSString *const MSG_WidthCHANGE = @"10";
+NSString *const MSG_WIDTHCHANGE = @"10";
 /**文本改变*/
-NSString *const MSG_TextCHANGE = @"11";
+NSString *const MSG_TEXTCHANGE = @"11";
 /**手型操作*/
 
 /**滚动条操作*/
-NSString *const MSG_ScrollPage = @"12";
+NSString *const MSG_SCROLLPAGE = @"12";
 /**页面操作*/
-NSString *const MSG_PageEdit = @"13";
+NSString *const MSG_EDITPAGE = @"13";
 /**文件再入*/
-NSString *const MSG_LoadFile = @"14";
+NSString *const MSG_LOADFILE = @"14";
 /**设置背景图*/
-NSString *const MSG_SetBgImage = @"15";
+NSString *const MSG_SET_BG_IMG = @"15";
 /**设置背景颜色*/
-NSString *const MSG_SetBgColor = @"16";
+NSString *const MSG_SET_BG_COLOR = @"16";
 
 
 

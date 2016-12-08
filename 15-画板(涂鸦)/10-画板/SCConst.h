@@ -3,7 +3,7 @@
 //  10-画板
 //
 //  Created by sunluwei on 16/11/17.
-//  Copyright © 2016年 小码哥. All rights reserved.
+//  Copyright © 2016年 scooper. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -23,27 +23,25 @@ UIKIT_EXTERN NSString *const MSG_TEXT;
 UIKIT_EXTERN NSString *const MSG_LOCCHANGE;
 /**大小改变*/
 UIKIT_EXTERN NSString *const MSG_SIZECHANGE;
-/**颜色改变*/
-UIKIT_EXTERN NSString *const MSG_ColorCHANGE;
+UIKIT_EXTERN NSString *const MSG_COLORCHANGE;
 /**字体改变*/
-UIKIT_EXTERN NSString *const MSG_FontCHANGE;
+UIKIT_EXTERN NSString *const MSG_FONTCHANGE;
 /**线宽改变*/
-UIKIT_EXTERN NSString *const MSG_WidthCHANGE;
+UIKIT_EXTERN NSString *const MSG_WIDTHCHANGE;
 /**文本改变*/
-UIKIT_EXTERN NSString *const MSG_TextCHANGE;
+UIKIT_EXTERN NSString *const MSG_TEXTCHANGE;
 /**手型操作*/
 
 /**滚动条操作*/
-UIKIT_EXTERN NSString *const MSG_ScrollPage;
+UIKIT_EXTERN NSString *const MSG_SCROLLPAGE;
 /**页面操作*/
-UIKIT_EXTERN NSString *const MSG_PageEdit;
+UIKIT_EXTERN NSString *const MSG_EDITPAGE;
 /**文件再入*/
-UIKIT_EXTERN NSString *const MSG_LoadFile;
+UIKIT_EXTERN NSString *const MSG_LOADFILE;
 /**设置背景图*/
-UIKIT_EXTERN NSString *const MSG_SetBgImage;
+UIKIT_EXTERN NSString *const MSG_SET_BG_IMG;
 /**设置背景颜色*/
-UIKIT_EXTERN NSString *const MSG_SetBgColor;
-
+UIKIT_EXTERN NSString *const MSG_SET_BG_COLOR;
 
 /**op:login*/
 UIKIT_EXTERN NSString *const NOTIFY_OP_LOGIN;
@@ -238,4 +236,24 @@ struct ColorChange {
     /**对象ID数组*/
     int ObjIDs[50];
 };
+struct WidthChange {
+    //头部
+    int commondID;
+    /**对象ID*/
+    //忍不住吐槽一下，服务端这个属性定义的顺序不严谨
+    int ObjID;
+    int pageID;
+    /**线宽*/
+    int nLineWidth;
+    /**对象ID数组*/
+    int ObjIDs[50];
+};
+struct TextChange {
+    int commondID;
+    int ObjId;
+    int pageID;
+    /**字符数据*/
+    char pData[50];
+};
+
 

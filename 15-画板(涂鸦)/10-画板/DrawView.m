@@ -2,8 +2,8 @@
 //  DrawView.m
 //  10-画板
 //
-//  Created by sunluwei on 16/10/31.
-//  Copyright © 2016年 Hader. All rights reserved.
+//  Created by sunluwei on 16/11/16.
+//  Copyright © 2016年 scooper. All rights reserved.
 //
 
 #import "DrawView.h"
@@ -86,7 +86,7 @@
     picture.rect = rect;
     picture.text = text;
     picture.color = self.color;
-
+//1067340658
     [self.allPathArray addObject:picture];
     
     [self setNeedsDisplay];
@@ -115,7 +115,7 @@
 }
 
 //设置线的宽度
-- (void)setLineWith:(CGFloat)lineWidth {
+- (void)setLineWidth:(CGFloat)lineWidth {
     self.width = lineWidth;
  
 }
@@ -211,8 +211,7 @@
                         newPath.color = path.color;
                         newPath.pathID = pathID;
                         newPath.points = newPoints;
-                        
-                        //                path.lineWidth = 2;
+                        newPath.lineWidth = path.lineWidth;
                         SCPoint *point = points[0];
                         [self.path moveToPoint:CGPointMake(point.x / 2.0, point.y / 2.0)];
                         
@@ -245,7 +244,12 @@
     //redraw the view
     [self setNeedsDisplay];
 }
-
+/**
+ *  批量修改颜色
+ *
+ *  @param color   要修改的颜色
+ *  @param pathIDs pathIDs
+ */
 - (void)iconColorChangeWithColor:(UIColor *)color andPathIDs:(NSArray *)pathIDs {
     
     if (pathIDs.count <= 0) {
@@ -309,6 +313,64 @@
 }
 
 /**
+ *  批量修改线宽
+ *
+ *  @param lineWidth 线宽
+ *  @param pathIDs   ID数组
+ */
+- (void)iconWidthChangeWithWidth:(int)lineWidth andPathIDs:(NSArray *)pathIDs {
+    
+    if (pathIDs.count <= 0) {
+        return;
+    }
+    
+    //
+    for (int i = 0; i < pathIDs.count; i++) {
+        //
+        NSNumber *ID = pathIDs[i];
+        NSLog(@"ids not nil, num:%lu", pathIDs.count);
+        int pathID = [ID intValue];
+        //为了提高性能 选择等所有路径计算完成之后再重绘
+        for (int i = 0; i < self.allPathArray.count; i++) {
+            
+            NSLog(@"allPathArray not nil, num:%lu", self.allPathArray.count);
+            if ([self.allPathArray[i] isKindOfClass:[SCPicture class]]) {
+                //目前windows客户端没有相应操作，这里接口预留
+                break;
+            }else if ([self.allPathArray[i] isKindOfClass:[MyBezierPath class]]) {
+                //路径
+                MyBezierPath *path = self.allPathArray[i];
+                
+                if (path.pathID == pathID) {
+                    //找到对象
+                    //找到的对象分成继红类型：点线、矩形、椭圆、直线、文字、图片。。。
+                    
+                    path.lineWidth = lineWidth;
+                    
+                    [self.allPathArray removeObjectAtIndex:i];
+                    
+                    [self.allPathArray addObject:path];
+                    
+                    //结束本次循环
+                    break;
+                    
+                }
+            }
+            
+        }
+        
+        
+    }
+    
+    //redraw the view
+    [self setNeedsDisplay];
+    
+    
+    
+}
+
+
+/**
  *  图形大小改变
  *
  *  @param rect   新的rect
@@ -341,6 +403,34 @@
     }
     
 }
+/**
+ *  文字改变
+ *
+ *  @param text   修改后的文字
+ *  @param pathID 元素ID
+ */
+- (void)fontContentChangeWithText:(NSString *)text andPathID:(int)pathID {
+    
+    for (int i = 0; i < self.allPathArray.count; i++) {
+        //
+        if ([self.allPathArray[i] isKindOfClass:[SCPicture class]]) {
+            //
+            SCPicture *picture = self.allPathArray[i];
+            
+            if (picture.pathID == pathID) {
+                //移除原来的path
+                [self.allPathArray removeObjectAtIndex:i];
+                
+                self.color = picture.color;
+                
+                [self drawWithFontText:text andRect:picture.rect andPathID:pathID];
+                
+                break;
+            }
+        }
+    }
+}
+
 
 
 - (void)moveLine {
@@ -393,6 +483,7 @@
     path.pathID = pathID;
     path.isFill = type > DrawTypeFill;
     path.color = self.color;
+    path.lineWidth = self.width;
     self.path = path;
     //加入到path数组中
     [self.allPathArray addObject:path];
@@ -418,6 +509,7 @@
     path.points = points;
     path.type = DrawTypePoints;
     path.color = self.color;
+    path.lineWidth = self.width;
     
 //    path.lineWidth = 2;
     SCPoint *point = points[0];
@@ -461,7 +553,7 @@
         } else {
             //设置线条颜色
             [path.color set];
-            [path setLineWidth:self.width];
+            //[path setLineWidth:self.width];
             [path stroke];
             //设置填充
             if (path.isFill) {

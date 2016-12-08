@@ -2,8 +2,8 @@
 //  ViewController.m
 //  10-画板
 //
-//  Created by sunluwei on 16/10/31.
-//  Copyright © 2016年 Hader. All rights reserved.
+//  Created by sunluwei on 16/11/16.
+//  Copyright © 2016年 scooper. All rights reserved.
 //
 
 #import "ViewController.h"
@@ -41,7 +41,7 @@
 
 //设置线的宽度
 - (IBAction)setLineWidth:(UISlider *)sender {
-    [self.drawView setLineWith:sender.value];
+    [self.drawView setLineWidth:sender.value];
 }
 
 //设置线的颜色
@@ -135,6 +135,7 @@
         //画笔
         Draw *draw = [[notification userInfo] objectForKey:@"data"];
         [self.drawView setLineColor:draw.color];
+        [self.drawView setLineWidth:draw.lineWidth];
         
         [self.drawView drawWithPoints: draw.points andPathID:draw.ObjId];
 
@@ -146,6 +147,8 @@
         //画其他图形
         Draw *draw = [[notification userInfo] objectForKey:@"data"];
         [self.drawView setLineColor:draw.color];
+        [self.drawView setLineWidth:draw.lineWidth];
+        
         [self.drawView iconWithRect:draw.rect andType:draw.type andPathID:draw.ObjId];
     } else if([code isEqualToString:MSG_IMAGE]) {
         UIImage *image = [[notification userInfo] objectForKey:@"data"];
@@ -167,10 +170,20 @@
         Draw *draw = [[notification userInfo] objectForKey:@"data"];
         [self.drawView iconSizeChangeWithRect:draw.rect andPathID:draw.ObjId];
         
-    } else if([code isEqualToString:MSG_ColorCHANGE]) {
+    } else if([code isEqualToString:MSG_COLORCHANGE]) {
         //大小改变通知
         Draw *draw = [[notification userInfo] objectForKey:@"data"];
         [self.drawView iconColorChangeWithColor:draw.color andPathIDs:draw.ObjIds];
+        
+    } else if([code isEqualToString:MSG_WIDTHCHANGE]) {
+        //大小改变通知
+        Draw *draw = [[notification userInfo] objectForKey:@"data"];
+        [self.drawView iconWidthChangeWithWidth:draw.lineWidth andPathIDs:draw.ObjIds];
+        
+    } else if([code isEqualToString:MSG_TEXTCHANGE]) {
+        //文字改变通知
+        Draw *draw = [[notification userInfo] objectForKey:@"data"];
+        [self.drawView fontContentChangeWithText:draw.text andPathID:draw.ObjId];
         
     }
 

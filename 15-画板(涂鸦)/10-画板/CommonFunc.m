@@ -3,10 +3,8 @@
 //  10-画板
 //
 //  Created by sunluwei on 16/11/22.
-//  Copyright © 2016年 小码哥. All rights reserved.
+//  Copyright © 2016年 scooper. All rights reserved.
 //
-
-#import "CommonFunc.h"
 
 #import "CommonFunc.h"
 
