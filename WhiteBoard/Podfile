@@ -1,0 +1,8 @@
+platform :ios, '7.0'
+target "WhiteBoard" do
+pod 'CocoaAsyncSocket'
+pod 'MJExtension'
+pod 'SIAlertView'
+pod 'objective-zip', '~> 1.0'
+pod 'UIView+AutoLayout'
+end

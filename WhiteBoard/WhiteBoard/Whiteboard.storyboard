@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="J65-Lp-abT">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="Ny8-TV-LRL">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="J65-Lp-abT" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="wjt-TQ-I9p">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="VRc-aO-p1S" kind="relationship" relationship="rootViewController" id="9Ca-2j-91E"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4Fy-Br-pXK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-199" y="229"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="BPQ-Cv-iDH">
+            <objects>
+                <viewController id="Pun-Xi-AOk" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="htx-44-qZ4"/>
+                        <viewControllerLayoutGuide type="bottom" id="5xr-Ev-fO7"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ch8-nX-UWQ">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G0j-Gi-P97">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Juq-nV-vGO" customClass="DrawView">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                        <animations/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="600" id="Foe-bS-OKF"/>
+                                            <constraint firstAttribute="width" constant="600" id="zDn-4P-WUk"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstItem="Juq-nV-vGO" firstAttribute="leading" secondItem="G0j-Gi-P97" secondAttribute="leading" id="2y2-7M-8Rg"/>
+                                    <constraint firstItem="Juq-nV-vGO" firstAttribute="top" secondItem="G0j-Gi-P97" secondAttribute="top" id="sOG-cr-W4g"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="delegate" destination="Pun-Xi-AOk" id="vVu-gO-TxF"/>
+                                </connections>
+                            </scrollView>
+                        </subviews>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="G0j-Gi-P97" firstAttribute="top" secondItem="htx-44-qZ4" secondAttribute="bottom" id="79s-is-5eP"/>
+                            <constraint firstAttribute="trailing" secondItem="G0j-Gi-P97" secondAttribute="trailing" id="Nwr-Tb-sh1"/>
+                            <constraint firstItem="5xr-Ev-fO7" firstAttribute="top" secondItem="G0j-Gi-P97" secondAttribute="bottom" id="ZQb-CW-pXJ"/>
+                            <constraint firstItem="G0j-Gi-P97" firstAttribute="leading" secondItem="ch8-nX-UWQ" secondAttribute="leading" id="oPY-f7-xu5"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="0wI-0w-9Dy">
+                        <nil key="title"/>
+                        <rightBarButtonItems>
+                            <barButtonItem style="plain" id="e8q-dW-yIR">
+                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="gEG-b7-lba">
+                                    <rect key="frame" x="536" y="0.0" width="44" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <state key="normal" image="btn_xinxi.png"/>
+                                    <state key="selected" image="btn_xinxi_pre.png"/>
+                                    <connections>
+                                        <action selector="btnMessage:" destination="Pun-Xi-AOk" eventType="touchUpInside" id="de8-hh-g00"/>
+                                    </connections>
+                                </button>
+                            </barButtonItem>
+                            <barButtonItem style="plain" id="VIE-ND-5aW">
+                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="wPR-YG-8Kj">
+                                    <rect key="frame" x="484" y="0.0" width="44" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <state key="normal" image="btn_wenjian.png"/>
+                                    <state key="selected" image="btn_wenjian_pre.png"/>
+                                    <connections>
+                                        <action selector="btnFiles:" destination="Pun-Xi-AOk" eventType="touchUpInside" id="NqQ-ca-YYM"/>
+                                    </connections>
+                                </button>
+                            </barButtonItem>
+                            <barButtonItem style="plain" id="dLl-gB-t9f">
+                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Q4J-uy-pcK">
+                                    <rect key="frame" x="432" y="0.0" width="44" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <state key="normal" image="btn_img.png"/>
+                                    <state key="selected" image="btn_img_pre.png"/>
+                                    <connections>
+                                        <action selector="btnImage:" destination="Pun-Xi-AOk" eventType="touchUpInside" id="4CO-Qh-HUT"/>
+                                    </connections>
+                                </button>
+                            </barButtonItem>
+                            <barButtonItem style="plain" id="OUt-wA-ToY">
+                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="qyK-64-Sgp">
+                                    <rect key="frame" x="380" y="0.0" width="44" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <state key="normal" image="btn_add.png"/>
+                                    <state key="selected" image="btn_add_pre.png"/>
+                                    <connections>
+                                        <action selector="btnAdd:" destination="Pun-Xi-AOk" eventType="touchUpInside" id="tcM-dt-s1N"/>
+                                    </connections>
+                                </button>
+                            </barButtonItem>
+                            <barButtonItem style="plain" id="KUa-fS-Xvo">
+                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="oIx-gw-VIB">
+                                    <rect key="frame" x="328" y="0.0" width="44" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <state key="normal" image="btn_del.png"/>
+                                    <state key="selected" image="btn_del_pre.png"/>
+                                    <connections>
+                                        <action selector="btnDelete:" destination="Pun-Xi-AOk" eventType="touchUpInside" id="FSQ-c8-1If"/>
+                                    </connections>
+                                </button>
+                            </barButtonItem>
+                            <barButtonItem style="plain" id="MDS-mS-7ez">
+                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="kcM-F5-FRJ">
+                                    <rect key="frame" x="276" y="0.0" width="44" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <state key="normal" image="btn_chexiao.png"/>
+                                    <state key="selected" image="btn_chexiao_pre.png"/>
+                                    <connections>
+                                        <action selector="btnRevoke:" destination="Pun-Xi-AOk" eventType="touchUpInside" id="2I6-Oe-d5N"/>
+                                    </connections>
+                                </button>
+                            </barButtonItem>
+                        </rightBarButtonItems>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="drawView" destination="Juq-nV-vGO" id="8Ue-wF-bdo"/>
+                        <outlet property="scrollView" destination="G0j-Gi-P97" id="cnD-oc-Ma4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oQs-eK-ffF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1221" y="235"/>
+        </scene>
+        <!--Login Controller-->
+        <scene sceneID="gFk-09-U7u">
+            <objects>
+                <viewController id="VRc-aO-p1S" customClass="LoginController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="RFD-tG-d7z"/>
+                        <viewControllerLayoutGuide type="bottom" id="8za-Xm-45x"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="AJX-mB-YVk">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="用户名:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XYK-4C-Otg">
+                                <rect key="frame" x="32" y="80" width="70" height="21"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="slw" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="d2J-HW-ZpD">
+                                <rect key="frame" x="112" y="76" width="150" height="30"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="密码:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7s7-AL-faA">
+                                <rect key="frame" x="32" y="115" width="70" height="21"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="服务器:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S5k-iO-BWA">
+                                <rect key="frame" x="32" y="150" width="70" height="21"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="192.168.101.15" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="aXM-y6-l0Q">
+                                <rect key="frame" x="112" y="146" width="150" height="30"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="端口号:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KMv-AC-wAj">
+                                <rect key="frame" x="32" y="185" width="70" height="21"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="6888" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2sq-f3-1U1">
+                                <rect key="frame" x="112" y="181" width="150" height="30"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yEM-PP-nGA">
+                                <rect key="frame" x="216" y="216" width="46" height="30"/>
+                                <animations/>
+                                <color key="backgroundColor" red="0.89411764709999997" green="0.89411764709999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="登陆"/>
+                                <connections>
+                                    <action selector="btnLoginClick:" destination="VRc-aO-p1S" eventType="touchUpInside" id="ELR-hD-EZK"/>
+                                    <segue destination="Pun-Xi-AOk" kind="push" id="WuR-Jl-bae"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="admin" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uE9-yu-vij">
+                                <rect key="frame" x="112" y="111" width="150" height="30"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Jur-g9-Ry6"/>
+                    <connections>
+                        <outlet property="txtName" destination="d2J-HW-ZpD" id="xq5-kt-OWg"/>
+                        <outlet property="txtPasswod" destination="uE9-yu-vij" id="bbr-HG-qXz"/>
+                        <outlet property="txtPort" destination="2sq-f3-1U1" id="SEu-b3-LGi"/>
+                        <outlet property="txtServer" destination="aXM-y6-l0Q" id="4tb-PF-fbR"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="id8-pu-4f1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="511" y="235"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="btn_add.png" width="44" height="44"/>
+        <image name="btn_add_pre.png" width="44" height="44"/>
+        <image name="btn_chexiao.png" width="44" height="44"/>
+        <image name="btn_chexiao_pre.png" width="44" height="44"/>
+        <image name="btn_del.png" width="44" height="44"/>
+        <image name="btn_del_pre.png" width="44" height="44"/>
+        <image name="btn_img.png" width="44" height="44"/>
+        <image name="btn_img_pre.png" width="44" height="44"/>
+        <image name="btn_wenjian.png" width="44" height="44"/>
+        <image name="btn_wenjian_pre.png" width="44" height="44"/>
+        <image name="btn_xinxi.png" width="44" height="44"/>
+        <image name="btn_xinxi_pre.png" width="44" height="44"/>
+    </resources>
+</document>
