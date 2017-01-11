@@ -304,5 +304,27 @@ struct RemovePaths {
     
     
 };
+/**白板页控制*/
+struct PageControl {
+    int commondID;
+    int ObjId;
+    int pageID;
+    
+    /**操作类型
+     * 1:新增白板页
+     * 2.翻页
+     * 这里缺少删除白板页
+     */
+    char type;
+    /**页码*/
+    char pageNum;
+    
+};
+
+struct PageClean {
+    int commondID;
+    int ObjId;
+    int pageID;
+};
 
 

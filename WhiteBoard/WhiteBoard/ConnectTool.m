@@ -29,6 +29,10 @@
 @property(nonatomic ,strong) GCDAsyncSocket *socket;
 /**计时器*/
 @property (nonatomic, strong) NSTimer *connectTimer;
+
+/**计时器*/
+@property (nonatomic, strong) NSTimer *dealTimer;
+
 /***/
 @property (nonatomic, strong) Account *account;
 @property (nonatomic, assign) int lastLength;
@@ -45,6 +49,8 @@
 @property (nonatomic, assign) int dataLenght;
 
 @property (nonatomic, strong) NSMutableData *tempData;
+
+@property (nonatomic, strong) NSMutableData *dataBuffer;
 
 /***/
 @property (nonatomic ,strong) UIAlertView *alert;
@@ -71,6 +77,13 @@
 //    }
 //    return _meeting;
 //}
+
+- (NSMutableData *)dataBuffer {
+    if (_dataBuffer == nil) {
+        self.dataBuffer = [NSMutableData data];
+    }
+    return _dataBuffer;
+}
 
 - (NSMutableData *)tempData {
     if (_tempData == nil) {
@@ -109,13 +122,13 @@
     self.socket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)];
     //连接
     NSError *error = nil;
-    [self.socket connectToHost:self.host onPort:self.port withTimeout:10 error:&error];
+    [self.socket connectToHost:self.host onPort:self.port withTimeout:5 error:&error];
     if (error) {
         //无法连接到主机
         NSLog(@"%@，无法连接主机",error);
         return NO;
     }
-    NSLog(@"%@",self.socket);
+    //NSLog(@"%@",self.socket);
     return YES;
 }
 /**断开连接*/
@@ -166,19 +179,37 @@ static dispatch_queue_t _dealQueue;
     NSLog(@"%s",__func__);
     NSLog(@"%@",[NSThread currentThread]);
     
+    NSDictionary *dictData = @{@"msg": @"connect_success"};
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DidReceiveLoginDataFromSever" object:nil userInfo:dictData];
+    
+    
     //连接成功后每隔XX秒发送心跳包
     // 每隔 x s像服务器发送心跳包
-    // 在longConnectToSocket方法中进行长连接需要向服务器发送的讯息
-    self.connectTimer = [NSTimer timerWithTimeInterval:0.4 target:self selector:@selector(longConnectToSocket) userInfo:nil repeats:YES];
-    //[[NSRunLoop currentRunLoop] addTimer:self.connectTimer forMode:NSRunLoopCommonModes];
-    [[NSRunLoop mainRunLoop] addTimer:self.connectTimer forMode:NSRunLoopCommonModes];
-//    [self.connectTimer fire];
-    //用户登录
-    //[self login];
     
-    _dealQueue=dispatch_queue_create("com.hellocation.gcdDemo", DISPATCH_QUEUE_SERIAL);
+    //设置定时器
+//    [self buildTimers];
     
 }
+/**
+ *  设置定时器
+ */
+- (void)buildTimers {
+    
+    
+    self.connectTimer = [NSTimer timerWithTimeInterval:0.05 target:self selector:@selector(longConnectToSocket) userInfo:nil repeats:YES];
+    
+    self.dealTimer = [NSTimer timerWithTimeInterval:0.2 target:self selector:@selector(makeData) userInfo:nil repeats:YES];
+    //[[NSRunLoop currentRunLoop] addTimer:self.connectTimer forMode:NSRunLoopCommonModes];
+    [[NSRunLoop mainRunLoop] addTimer:self.connectTimer forMode:NSRunLoopCommonModes];
+    [[NSRunLoop mainRunLoop] addTimer:self.dealTimer forMode:NSRunLoopCommonModes];
+
+    
+    
+    
+}
+
+
 #pragma mark 断开连接
 -(void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err{
     
@@ -187,6 +218,11 @@ static dispatch_queue_t _dealQueue;
     if (err) {
         NSLog(@"连接失败");
         NSLog(@"%@",err);
+        
+        NSDictionary *dictData = @{@"msg": @"connect_error"};
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"DidReceiveLoginDataFromSever" object:nil userInfo:dictData];
+        
     }else{
         NSLog(@"正常断开");
         NSLog(@"%@",[NSThread currentThread]);
@@ -202,7 +238,7 @@ static dispatch_queue_t _dealQueue;
     if (sock.userData == SocketOfflineByServer || sock.userData == nil) {
         // 服务器掉线，重连
         NSLog(@"reconnected...");
-        [self connectToServer];
+//        [self connectToServer];
     }
     else if (sock.userData == [[NSNumber alloc] initWithInteger:SocketOfflineByUser]) {
         // 如果由用户断开，不进行重连
@@ -357,8 +393,19 @@ static dispatch_queue_t _dealQueue;
 
 #pragma mark 读取数据
 -(void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag{
+    NSLog(@"%@", [NSThread currentThread]);
+    
+//    [self.dataBuffer appendData:data];
+    
+    
     //1.判断data length > 4
 
+//    [self buildData:[data copy]];
+//    [self makeData:data];
+//    
+    
+    
+    
     NSLog(@"%s消息接收成功",__func__);
     
     //[self.tempData appendData:data];
@@ -368,6 +415,53 @@ static dispatch_queue_t _dealQueue;
 //    [self.queue addOperation:operation];
     
     //SettingData* set = [SettingData shareSettingData];
+//    
+//    if (self.dataLenght == 0) {
+//        
+//        int dataLenght = [self getDataLengthWithData:data];
+//        
+//        self.dataLenght = dataLenght;
+//        
+//        if (dataLenght > 1448) {
+//            //
+//            self.dataLenght = dataLenght - 1448;
+//            [sock readDataWithTimeout:-1 tag:tag];
+//            
+//            
+//        } else {
+//            
+//            [sock readDataToLength:dataLenght withTimeout:-1 tag:tag];
+//        }
+//
+//        return;
+//    }
+//
+//    if (data.length < self.dataLenght) {
+//        //
+//        [self.muData appendData:data];
+//        
+//        if (self.dataLenght > 1448) {
+//            self.dataLenght = self.dataLenght - 1448;
+//            [sock readDataWithTimeout:-1 tag:tag];
+//            
+//        } else {
+//            [sock readDataToLength:self.dataLenght withTimeout:-1 tag:tag];
+//        }
+//        
+//    } else {
+//        
+//        [self.muData appendData:data];
+//        
+//        [self parserData:self.muData withTag:tag];
+//    }
+
+    
+//    dispatch_async(_dealQueue, ^{
+//        //
+//        [self buildData:[data copy]];
+//    });
+    
+    
     
     if (self.dataLenght == 0) {
         
@@ -375,43 +469,44 @@ static dispatch_queue_t _dealQueue;
         
         self.dataLenght = dataLenght;
         
+        NSLog(@"need length:%d", dataLenght);
+            
         [sock readDataToLength:dataLenght withTimeout:-1 tag:tag];
+        
+//        [sock readDataToLength:dataLenght withTimeout:-1 buffer:self.muData bufferOffset:0 tag:tag];
+        
         return;
+        
+    } else {
+        NSLog(@"receiveLength:%d", data.length);
+
+        [self.muData appendData:data];
+
+        [self parserData:self.muData withTag:tag];
+        
+    }
+}
+
+- (void)socket:(GCDAsyncSocket *)sock didReadPartialDataOfLength:(NSUInteger)partialLength tag:(long)tag {
+    
+    NSLog(@"partialLength:%ld", partialLength);
+    
+    NSLog(@"self.dataLenght:%d", self.dataLenght);
+    if (partialLength < self.dataLenght) {
+        
+        //[sock readDataToLength:self.dataLenght - partialLength withTimeout:-1 tag:tag];
+//        [sock readDataToLength:self.dataLenght - partialLength withTimeout:-1 tag:tag];
+        
     }
     
-    [self.muData appendData:data];
-    
-    [self parserData:self.muData withTag:tag];
-    
-    
-//    dispatch_async(_dealQueue, ^{
-//        //
-//        [self buildData:[data copy]];
-//    });
-//    
-//    if (self.lastLength == 0) {
-//        [self.muData setLength:0];
-//    }
-//    
-//    if (data.length == 1448) {
-//        [self.muData appendData:data];
-//        self.lastLength = 1448;
-//        return;
-//    } else {
-//        if (self.lastLength == 1448) {
-//            [self.muData appendData:data];
-//            
-//            data = self.muData;
-//            
-//            self.lastLength = 0;
-//        }
-//    }
-    
-    //[self dealOrignalData:data];
     
 }
 
+
 - (void)dealOrignalData:(NSData *)data {
+    
+//    [self.dataBuffer resetBytesInRange:NSMakeRange(0, data.length + 4)];
+    
     
     NSString *receiverStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     NSLog(@"data.length:%ld, resultStr:------%@",data.length, receiverStr);
@@ -764,7 +859,107 @@ static dispatch_queue_t _dealQueue;
     //
     //    [self.socket writeData:dataStream withTimeout:1 tag:1];
     //NSLog(@"111");
+//    [self makeData:data];
+//    NSLog(@"%@", [NSThread currentThread]);
+    
     //[self.socket readDataWithTimeout:-1 tag:1009];
+    
+    [self.socket readDataWithTimeout:-1 tag:2017];
+    
+}
+- (void)makeData {
+    
+//    if (data) {
+//        [self.dataBuffer appendData:data];
+//    }
+    
+    
+    
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        //        NSLog(@"%@", [NSThread currentThread]);
+//        
+//        
+//        
+//        @synchronized(self.dataBuffer) {
+//            
+//            
+//            if (self.dataBuffer.length < 4) {
+//                return;
+//            }
+//            
+//            //根据前面四个字节获取长度
+//            int length = 0;
+//            NSData *lengthData = [self.dataBuffer subdataWithRange:NSMakeRange(0, 4)];
+//            Byte *dataByte = (Byte *)[lengthData bytes];
+//            int offset = 0;
+//            
+//            length = (int) ((dataByte[offset] & 0xFF)
+//                            | ((dataByte[offset+1] & 0xFF)<<8)
+//                            | ((dataByte[offset+2] & 0xFF)<<16)
+//                            | ((dataByte[offset+3] & 0xFF)<<24));
+//            
+//            
+//            
+//            
+//            if (self.dataBuffer.length < length + 4) {
+//                return;
+//            }
+//            
+//            NSData *restData = [self.dataBuffer subdataWithRange:NSMakeRange(4, self.dataBuffer.length - 4)];
+//            restData = [self.dataBuffer subdataWithRange:NSMakeRange(4, length)];
+//            
+//            self.dataBuffer = [NSMutableData dataWithData:[self.dataBuffer subdataWithRange:NSMakeRange(length + 4, self.dataBuffer.length - (length + 4))]];
+//            
+//            [self dealOrignalData:restData];
+//            
+//            if (self.dataBuffer.length > 4) {
+//                //粘包处理
+//                [self parseRestData];
+//            }
+//
+//            
+//            
+//        }
+//        
+//        
+//    });
+//
+//    
+    
+    
+    
+    
+}
+- (void)parseRestData {
+    //获取长度
+    int length = 0;
+    NSData *lengthData = [self.dataBuffer subdataWithRange:NSMakeRange(0, 4)];
+    Byte *dataByte = (Byte *)[lengthData bytes];
+    int offset = 0;
+    
+    length = (int) ((dataByte[offset] & 0xFF)
+                    | ((dataByte[offset+1] & 0xFF)<<8)
+                    | ((dataByte[offset+2] & 0xFF)<<16)
+                    | ((dataByte[offset+3] & 0xFF)<<24));
+    
+    if (self.dataBuffer.length < length + 4) {
+        return;
+    }
+    
+    NSData *restData = [self.dataBuffer subdataWithRange:NSMakeRange(4, self.dataBuffer.length - 4)];
+    restData = [self.dataBuffer subdataWithRange:NSMakeRange(4, length)];
+    
+    self.dataBuffer = [NSMutableData dataWithData:[self.dataBuffer subdataWithRange:NSMakeRange(length + 4, self.dataBuffer.length - (length + 4))]];
+    [self dealOrignalData:restData];
+    
+    
+    
+    if (self.dataBuffer.length > 4) {
+        [self parseRestData];
+    }
+    
+    
+    
 }
 
 // 切断socket
@@ -839,6 +1034,12 @@ static dispatch_queue_t _dealQueue;
                 Meeting *meeting = [Meeting mj_objectWithKeyValues:result.data];
                 self.meeting = meeting;
                 
+                NSDictionary *dict = @{
+                                       @"code":@"join_success"
+                                       };
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"DidReceiveDataFromSever" object:nil userInfo:dict];
+                
             }
             NSLog(@"加入会议join:%d", uid);
             
@@ -874,7 +1075,18 @@ static dispatch_queue_t _dealQueue;
     
     
     
+    if ([result.result isEqualToString:@"err"]) {
     
+        if ([result.op isEqualToString:NOTIFY_OP_LOGIN]) {
+            
+            NSDictionary *dict = @{
+                                   @"msg" : @"LOGIN_FAIL"
+                                   };
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"DidReceiveLoginDataFromSever" object:nil userInfo:dict];
+        
+        }
+    }
     
     
     
@@ -896,6 +1108,12 @@ static dispatch_queue_t _dealQueue;
                 [userDefault setObject:@"YES" forKey:@"wb_login"];
                 
                 [userDefault synchronize];
+                
+                NSDictionary *dict = @{
+                    @"msg" : @"LOGIN_SUCCESS"
+                };
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"DidReceiveLoginDataFromSever" object:nil userInfo:dict];
             });
             
         } else if ([result.op isEqualToString:NOTIFY_OP_CREATE]) {
@@ -1066,7 +1284,7 @@ static dispatch_queue_t _dealQueue;
                     [array addObject:[NSNumber numberWithInt:objID]];
                     
                 }
-                draw.ObjIds = array;
+                draw.ObjIds = [array copy];
             }
             
             //1.包装成字典，把id、point
@@ -1286,6 +1504,29 @@ static dispatch_queue_t _dealQueue;
             //滚动条
         } else if(infoStruct2->CommandID == 14) {
             //白板页面操作
+            struct PageControl pan;
+            //结构体内-清空多余空间
+            memset(&pan, 0, sizeof(struct PageControl));
+            //给结构体赋值
+            [nsdataFromBase64String getBytes:&pan length:nsdataFromBase64String.length];
+            
+            Draw *draw = [[Draw alloc] init];
+            draw.pageNum = pan.pageNum;
+            draw.pageControlType = pan.type;
+            
+            /**发送通知
+             * data:
+             *     1:新增白板页
+             *     2:切换白板页
+             */
+            NSDictionary *dictData = @{@"data": draw, @"msg":@"白板页操作", @"code":MSG_EDITPAGE};
+            
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"DidReceiveDataFromSever" object:nil userInfo:dictData];
+            });
+            
+            
         } else if(infoStruct2->CommandID == 15) {
             //载入文件
         } else if(infoStruct2->CommandID == 16) {
@@ -1500,20 +1741,22 @@ static dispatch_queue_t _dealQueue;
         
         memset(&pan, 0, sizeof(struct ImageDraw));
         
-        [data getBytes:&pan length:data.length];
+        [data getBytes:&pan length:48];
         //Byte *byte = (Byte *)[data bytes];
         int orSize = pan.dwSize;
         Byte unByte[orSize];
         
         memset(unByte, 0, orSize);
         
-        for (int i = 0; i < orSize; i++) {
-            //
-            unByte[i] = pan.pBuffer[i];
-        }
+//        for (int i = 0; i < orSize; i++) {
+//            //
+//            unByte[i] = pan.pBuffer[i];
+//        }
         
         
-        NSData *data2 = [NSData dataWithBytes:unByte length:pan.dwSize];
+//        NSData *data2 = [NSData dataWithBytes:unByte length:pan.dwSize];
+        
+        NSData *data2 = [data subdataWithRange:NSMakeRange(48, pan.dwSize)];
         
 //        NSData *adata = [self deCompressZlibData:data2 withDeDataSize:pan.dwUnSize];
         NSData *adata = [data2 customerGunzippedData];
@@ -1523,8 +1766,8 @@ static dispatch_queue_t _dealQueue;
 //        NSData *data = [adata gunzippedData];
         
         UIImage *image = [UIImage imageWithData:adata];
-        
-        [adata writeToFile:@"/Users/sunluwei/Desktop/img.zip" atomically:YES];
+//        
+//        [adata writeToFile:@"/Users/sunluwei/Desktop/img.zip" atomically:YES];
         
 //        NSData *unData = [self uncompressZippedData:adata];
         
@@ -1612,6 +1855,7 @@ static dispatch_queue_t _dealQueue;
     return string;
     
 }
+
 - (NSString *)stringFromHexString:(NSString *)hexString {
     hexString = @"8c37";
     
@@ -1659,6 +1903,55 @@ static dispatch_queue_t _dealQueue;
     NSString *base64Encoded = [data base64EncodedStringWithOptions:0];
     
     return base64Encoded;
+    
+}
+/**
+ *  清除页面内容
+ *
+ *  @param PageNum 页面编号
+ */
+- (void)cleanPageWithPageNum:(int)PageNum {
+    
+    struct PageClean pan;
+    
+    memset(&pan, 0, sizeof(struct PageClean));
+    
+    pan.commondID = 5;
+    
+    pan.ObjId = 0;
+    
+    pan.pageID = PageNum;
+
+    NSData *data = [NSData dataWithBytes:&pan length:sizeof(struct PageClean)];
+    
+    [self sendWhiteData:data];
+}
+
+/**
+ *  发送创建白板页指令
+ *
+ *  @param pageNum 白板页码
+ *  @param type    类型
+ */
+- (void)pageControlWithPageNum:(char)pageNum andControlType:(char)type {
+    
+    struct PageControl pan;
+    
+    memset(&pan, 0, sizeof(struct PageControl));
+    
+    pan.commondID = 14;
+    
+    pan.ObjId = 0;
+    
+    pan.pageID = 0;
+    
+    pan.type = type;
+    
+    pan.pageNum = pageNum;
+    
+    NSData *data = [NSData dataWithBytes:&pan length:sizeof(struct PageControl)];
+    
+    [self sendWhiteData:data];
     
 }
 

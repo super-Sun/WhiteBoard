@@ -21,6 +21,9 @@
 //保存当前绘制的所有路径
 @property (nonatomic, strong) NSMutableArray *allPathArray;
 
+//保存所有白板页路径
+@property (nonatomic, strong) NSMutableArray *allPagePathArray;
+
 //当前路径的线宽
 @property (nonatomic, assign) CGFloat width;
 
@@ -34,6 +37,24 @@
 @end
 
 @implementation DrawView
+
+
+
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    
+    if ([super initWithFrame:frame]) {
+        //添加手势
+        [self addRecognizer];
+        
+        self.width = 1;
+        self.color = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
+    }
+    
+    return self;
+    
+    
+}
 
 /**
  *  lazy
@@ -58,13 +79,22 @@
     return _allPathArray;
 }
 
+- (NSMutableArray *)allPagePathArray {
+    if (_allPagePathArray == nil) {
+        self.allPagePathArray = [NSMutableArray array];
+        
+        [self.allPagePathArray addObject:self.allPathArray];
+    }
+    return _allPagePathArray;
+}
+
 
 - (void)awakeFromNib {
     //添加手势
     [self addRecognizer];
     
     self.width = 1;
-    self.color = [UIColor blackColor];
+    self.color = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
 }
 /**删除手势*/
 - (void)removeRecognizer {
@@ -95,6 +125,26 @@
     return;
 
 }
+/**
+ *  获取白板页数
+ *
+ *  @return 白板页数
+ */
+- (int)getPageNum {
+    
+    return (int)self.allPagePathArray.count;
+    
+}
+/**
+ *  获取当前页码
+ *
+ *  @return 当前页码
+ */
+- (int)getCurrentPageNum {
+    
+    return (int)[self.allPagePathArray indexOfObject:self.allPathArray];
+}
+
 
 /**
  *  添加图片
@@ -702,7 +752,7 @@
         
             pan.commondID = 3;
             pan.pageID = self.path.pathID;
-            pan.ObjId = 0;
+            pan.ObjId = (int)[self.allPagePathArray indexOfObject:self.allPathArray];
             pan.ObjType = 1;
             
             /**对象ID*/
@@ -827,6 +877,49 @@
     [self setNeedsDisplay];
     
 }
+/**
+ *  白板页控制
+ *
+ *  @param pageNum 白板页码
+ *  @param type    操作类型
+ */
+- (void)pageControlWithPageNum:(int)pageNum andControlType:(char)type {
+    
+    if (type == 1) {
+        //新增白板页
+        //1.新建一个数组 加入白板数组
+        //2.将当前绘制数组切换成新的数组
+        //3.刷新白板页
+        NSMutableArray *array = [NSMutableArray array];
+        
+        [self.allPagePathArray addObject:array];;
+        
+        self.allPathArray = array;
+        
+        [self setNeedsDisplay];
+        
+    } else if (type == 2) {
+        //切换白板页
+        //1.根据pageNum切换成当前数组
+        //2.刷新白板页
+        if (self.allPagePathArray.count == 0 || pageNum > self.allPagePathArray.count) {
+            return;
+        }
+        
+        self.allPathArray = self.allPagePathArray[pageNum];
+        
+        [self setNeedsDisplay];
+        
+    } else {
+        //其他
+        
+        
+    }
+    
+    
+}
+
+
 
 -(void)drawRect:(CGRect)rect {
     

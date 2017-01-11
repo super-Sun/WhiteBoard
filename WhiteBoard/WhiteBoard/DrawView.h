@@ -19,6 +19,21 @@
 
 @interface DrawView : UIView
 
+/**
+ *  获取白板页数
+ *
+ *  @return 白板页数
+ */
+- (int)getPageNum;
+
+
+/**
+ *  获取当前页码
+ *
+ *  @return 当前页码
+ */
+- (int)getCurrentPageNum;
+
 //清屏
 - (void)clear;
 //撤销
@@ -64,6 +79,8 @@
 - (void)removePathsWithPathIDs:(NSArray *)pathIDs;
 /**添加图片*/
 - (void)drawImageWithImage:(UIImage *)image andPathID:(int)pathID rect:(CGRect)rect;
+
+- (void)pageControlWithPageNum:(int)pageNum andControlType:(char)type;
 
 
 /** 要绘制的图片 */

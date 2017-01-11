@@ -35,6 +35,8 @@
 -(void)setImage:(UIImage *)image {
     _image = image;
     
+    self.ImgRect = CGRectMake(0, 0, image.size.width, image.size.height);
+    
     NSLog(@"%@",self.imageV);
     self.imageV.image = image;
     /**
@@ -47,7 +49,7 @@
      */
     //图片拉伸的方式
     self.imageV.contentMode = UIViewContentModeScaleAspectFit;
-    self.imageV.backgroundColor = [UIColor redColor];
+//    self.imageV.backgroundColor = [UIColor redColor];
     
 }
 
@@ -75,7 +77,7 @@
     UIRotationGestureRecognizer *rotation = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(rotation:)];
     rotation.delegate = self;
     
-    [self.imageV addGestureRecognizer:rotation];
+//    [self.imageV addGestureRecognizer:rotation];
     
     // 长按手势
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
@@ -89,8 +91,10 @@
 //捏合的时候调用.
 - (void)pinch:(UIPinchGestureRecognizer *)pinch
 {
-    
+    NSLog(@"pinch.scale:%f",pinch.scale);
     pinch.view.transform = CGAffineTransformScale( pinch.view.transform, pinch.scale, pinch.scale);
+    
+    self.ImgRect = CGRectMake(self.ImgRect.origin.x, self.ImgRect.origin.y, self.ImgRect.size.width * pinch.scale, self.ImgRect.size.height * pinch.scale);
     // 复位
     pinch.scale = 1;
 }
@@ -156,6 +160,15 @@
     CGPoint transP = [pan translationInView:pan.view];
     
     pan.view.transform = CGAffineTransformTranslate(pan.view.transform, transP.x, transP.y);
+    
+//    NSLog(@"x:%f, y:%f", transP.x, transP.y);
+//    
+//    CGPoint point = self.ImgRect.origin;
+//    point = CGPointMake(transP.x + point.x, transP.y + point.y);
+//    
+//    self.ImgRect = CGRectMake(point.x, point.y, self.ImgRect.size.width, self.ImgRect.size.height);
+    
+    
     //复位
     [pan setTranslation:CGPointZero inView:pan.view];
     

@@ -45,6 +45,22 @@ enum {
 - (void)sendWhiteData:(NSData *)data;
 
 /**
+ *  发送创建白板页指令
+ *
+ *  @param pageNum 白板页码
+ *  @param type    类型
+ */
+- (void)pageControlWithPageNum:(char)pageNum andControlType:(char)type;
+
+
+/**
+ *  清除页面内容
+ *
+ *  @param PageNum 页面编号
+ */
+- (void)cleanPageWithPageNum:(int)PageNum;
+
+/**
  *  查询会议中的成员
  */
 - (void)queryMember;

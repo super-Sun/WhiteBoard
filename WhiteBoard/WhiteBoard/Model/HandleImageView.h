@@ -23,5 +23,9 @@
 
 /** <#注释#> */
 @property (nonatomic, weak) id<handleImageViewDelegate> delegate;
+/** 大小*/
+@property (nonatomic, assign) CGRect ImgRect;
+
+
 
 @end

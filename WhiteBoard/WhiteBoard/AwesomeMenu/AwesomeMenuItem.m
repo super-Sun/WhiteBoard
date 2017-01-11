@@ -41,7 +41,7 @@ highlightedContentImage:(UIImage *)hcimg;
 {
     [super layoutSubviews];
     
-    self.bounds = CGRectMake(0, 0, self.image.size.width, self.image.size.height);
+    self.bounds = CGRectMake(0, 0, self.image.size.height, self.image.size.width);
     
     float width = _contentImageView.image.size.width;
     float height = _contentImageView.image.size.height;

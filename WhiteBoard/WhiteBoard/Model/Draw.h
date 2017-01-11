@@ -35,5 +35,12 @@
 @property (nonatomic, assign) CGPoint point;
 /**图片*/
 @property (nonatomic, strong) UIImage *image;
-
+/**白板页*/
+@property (nonatomic, assign) int pageNum;
+/**操作类型
+ * 1:新增白板页
+ * 2.翻页
+ * 这里缺少删除白板页
+ */
+@property (nonatomic, assign) char pageControlType;
 @end

@@ -124,6 +124,8 @@ static void *libzOpen()
     if (inflateInit2(&stream, -MAX_WBITS) == Z_OK)
     {
         int status = Z_OK;
+        
+        NSLog(@"-------status:%d", status);
         output = [NSMutableData dataWithCapacity:self.length * 2];
         while (status == Z_OK)
         {

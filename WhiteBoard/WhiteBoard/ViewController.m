@@ -19,6 +19,8 @@
 #import "SCMemberHeadView.h"
 #import "Meeting.h"
 #import "Account.h"
+#import "MBProgressHUD+MJ.h"
+#import "FileListController.h"
 
 
 @interface ViewController () <UIImagePickerControllerDelegate,handleImageViewDelegate, DrawViewDelegate, ToolViewDelegate, UITableViewDelegate, UITableViewDataSource>
@@ -48,11 +50,25 @@
 @property (nonatomic, assign) int moveLength;
 
 @property (nonatomic, assign) BOOL isShow;
+/**存放截图*/
+@property (nonatomic, strong) NSMutableArray *imgArray;
 
 
 @end
 
 @implementation ViewController
+
+
+- (NSMutableArray *)imgArray {
+    if (!_imgArray) {
+        self.imgArray = [NSMutableArray array];
+        
+        [self.imgArray addObject:[self getImage]];
+        
+    }
+    return _imgArray;
+    
+}
 
 - (NSArray *)members {
     if (!_members) {
@@ -63,11 +79,24 @@
 
 - (ToolView *)toolView {
     if (!_toolView) {
+        
+//        UIBlurEffect * blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+//        UIVisualEffectView * effe = [[UIVisualEffectView alloc]initWithEffect:blur];
+//        effe.frame = CGRectMake(0, 0, 210, 160);
+        //effe.center = self.view.center;
         //
         self.toolView = [ToolView instanceToolView];
-        self.toolView.frame = CGRectMake(100, 100, 200, 150);
+        self.toolView.frame = CGRectMake(0, 0, 200, 150);
+        self.toolView.center = self.view.center;
+        
+        self.toolView.layer.borderWidth = 2;
+        
+        self.toolView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+        NSLog(@"%@", NSStringFromCGRect(self.view.frame));
         
         self.toolView.delegate = self;
+        
+//        [effe addSubview:self.toolView];
         
         [self.view addSubview: self.toolView];
         
@@ -77,41 +106,77 @@
     return _toolView;
 }
 
+
+
+
+
+/**
+ *  从view上截图
+ *
+ *  @return 图片
+ */
+- (UIImage *)getImage {
+    
+    UIGraphicsBeginImageContextWithOptions(self.scrollView.frame.size, NO, 1.0);  //NO，YES 控制是否透明
+    [self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    // 生成后的image
+    
+    return image;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
     
-    self.drawView.delegate = self;
+    
     
     [self setTableView];
     //初始化状态栏
     [self setupNav];
     
+    //scrollView配置
+    [self initScrollView];
+    
     //创建一个菜单
     [self setupUserMenu];
     
-    //scrollView配置
-    
-    [self initScrollView];
-    
     ConnectTool *client =  [ConnectTool sharedInstance];
     self.client = client;
-     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    client.host = [userDefaults objectForKey:@"wb_server"];
-    client.port = [[userDefaults objectForKey:@"wb_port"] intValue];
-    
-    NSLog(@"host:%@, port:%d", [userDefaults objectForKey:@"wb_server"], client.port);
-    [client connectToServer];
-    
-    [client loginWithUserName:[userDefaults objectForKey:@"wb_username"] password:[userDefaults objectForKey:@"wb_password"]];
+     
     
     //注册通知
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveDataWithNotification:)
                                                  name:@"DidReceiveDataFromSever"
                                                object:nil];
+    //DidReceivePageChangeFromSever
+    
+    //注册通知
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(pageChange:)
+                                                 name:@"DidReceivePageChangeFromSever"
+                                               object:nil];
     
 
+}
+
+/**
+ *  接收页面切换信息
+ *
+ *  @param info 信息 key:"pageNum"
+ */
+- (void)pageChange:(NSNotification *)info {
+    
+    NSDictionary *infoDict = [info userInfo];
+    
+    
+    NSNumber *pageNum = infoDict[@"pageNum"];
+    
+    
+    [self.drawView pageControlWithPageNum:[pageNum intValue] andControlType:2];
+    
 }
 
 
@@ -150,14 +215,59 @@
  */
 - (void)initScrollView {
     
+    CGRect rectNav = self.navigationController.navigationBar.frame;
+    NSLog(@"nav width - %f", rectNav.size.width); // 宽度
+    NSLog(@"nav height - %f", rectNav.size.height);   // 高度
+    
+//    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    UIScrollView *scrollView = [[UIScrollView alloc] init];
+    
+    scrollView.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - rectNav.size.height);
+    scrollView.delegate = self;
+    
+
+    self.scrollView = scrollView;
+    
     
     self.scrollView.minimumZoomScale = 0.2;
     
     self.scrollView.maximumZoomScale = 3.0;
     
+    self.scrollView.backgroundColor = [UIColor grayColor];
+    
+    
+    [self initDrawView];
+    
     self.scrollView.contentSize = CGSizeMake(self.drawView.bounds.size.width, self.drawView.bounds.size.height);
     
+    [self.view addSubview:scrollView];
+    
+    
+    
+    
 }
+
+/**
+ *  创建DrawView
+ */
+- (void)initDrawView {
+    
+    DrawView *drawView = [[DrawView alloc] init];
+    
+    drawView.frame = CGRectMake(0, 0, 1200, 1200);
+    
+    drawView.backgroundColor = [UIColor whiteColor];
+    
+    self.drawView = drawView;
+    
+    self.drawView.delegate = self;
+    
+    [self.scrollView addSubview:drawView];
+    
+    
+}
+
 //获取数据
 -(void)didReceiveDataWithNotification:(NSNotification *)notification{
     //主线程中执行
@@ -243,6 +353,24 @@
         
         [self.memberView reloadData];
         
+    } else if ([code isEqualToString:@"join_success"]) {
+        
+       dispatch_async(dispatch_get_main_queue(), ^{
+            [MBProgressHUD showSuccess:@"会议加入成功!"];
+       });
+        
+        
+    } else if ([code isEqualToString:MSG_EDITPAGE]) {
+        
+        
+        Draw *draw = [[notification userInfo] objectForKey:@"data"];
+        
+        [self.drawView pageControlWithPageNum:draw.pageNum andControlType:draw.pageControlType];
+        
+        if (draw.pageControlType == 1) {
+            [self.imgArray addObject:[self getImage]];
+        }
+        
     }
     
     
@@ -265,6 +393,10 @@
     self.navigationController.navigationBar.translucent = NO;
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     
+}
+- (BOOL)prefersStatusBarHidden {
+    //    [super prefersStatusBarHidden];
+    return NO;
 }
 
 #pragma mark-tableview delegate
@@ -453,8 +585,9 @@
 }
 
 
-#pragma mark-
+#pragma mark-scrollView缩放
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    
     
     
     
@@ -470,12 +603,23 @@
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale {
     
     NSLog(@"scale:%f", scale);
+    CGFloat offsetX = (self.scrollView.bounds.size.width > self.scrollView.contentSize.width)?
     
+    (self.scrollView.bounds.size.width - self.scrollView.contentSize.width) * 0.5 : 0.0;
+    
+    CGFloat offsetY = (self.scrollView.bounds.size.height > self.scrollView.contentSize.height)?
+    
+    (self.scrollView.bounds.size.height - self.scrollView.contentSize.height) * 0.5 : 0.0;
+    
+    self.drawView.center = CGPointMake(self.scrollView.contentSize.width * 0.5 + offsetX,
+                                       
+                                       self.scrollView.contentSize.height * 0.5 + offsetY);
+    
+
     
     
     
 }
-
 
 
 #pragma mark-导航栏按钮点击操作
@@ -495,7 +639,7 @@
     
     sender.selected = YES;
     
-    sender.backgroundColor = [UIColor colorWithRed:33 / 255.0 green:39 / 255.0 blue:41 / 255.0 alpha:1];
+//    sender.backgroundColor = [UIColor colorWithRed:33 / 255.0 green:39 / 255.0 blue:41 / 255.0 alpha:1];
     
     self.curSelectedBtn = sender;
     
@@ -508,6 +652,34 @@
     
     return rect;
 }
+
+- (void)messageBack {
+    
+    if (!self.isShow) {
+        return;
+    }
+    
+    self.isShow = !self.isShow;
+    
+    self.moveLength = -320;
+    
+    [UIView animateWithDuration:0.5 animations:^{
+        
+        //移动memberview 320
+        self.memberView.frame = [self rectMoveWithFrame:self.memberView.frame length:self.moveLength];
+        
+        //移动drawView
+        
+        //self.drawView.frame = [self rectMoveWithFrame:self.drawView.frame length:self.moveLength];
+        
+        //移动menu
+        self.menu.frame = [self rectMoveWithFrame:self.menu.frame length:self.moveLength];
+        self.scrollView.frame = [self rectMoveWithFrame:self.scrollView.frame length:self.moveLength];
+        
+    }];
+    
+}
+
 
 /**
  *  消息按钮点击
@@ -522,9 +694,14 @@
         
         sender.selected = NO;
         
+        self.menu.userInteractionEnabled = YES;
+        
         
     } else {
         //
+        
+        self.menu.userInteractionEnabled = NO;
+        
         self.moveLength = 320;
         
         [self.drawView addRecognizer];
@@ -553,6 +730,9 @@
     }];
     
 }
+
+
+
 /**
  *  文件按钮点击
  *
@@ -560,11 +740,28 @@
  */
 - (IBAction)btnFiles:(UIButton *)sender {
     
+    
+//    [MBProgressHUD showError:@"暂不可用!"];
+    
     //按钮状态改变
     [self buttonStateChangeWithButton:sender];
     
+    //modal Files 控制器
+    FileListController *flc = [[FileListController alloc] init];
+
+//    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:flc];
     
-    [self.drawView removeRecognizer];
+    
+    
+    [self presentViewController:flc animated:YES completion:^{
+        NSLog(@"弹出一个模态窗口");
+        
+        [flc setDataWithArray:[self.imgArray copy]];
+        
+    }];
+    
+    
+    
     
 }
 
@@ -574,6 +771,9 @@
  *  @param sender
  */
 - (IBAction)btnImage:(UIButton *)sender {
+    
+    [self messageBack];
+    
     //按钮状态改变
     [self buttonStateChangeWithButton:sender];
     
@@ -591,14 +791,106 @@
     
 }
 /**
+ *  屏幕手势支持
+ *
+ *  @param sender sender        
+ */
+- (IBAction)btnScrollable:(UIButton *)sender {
+    
+    if (!sender.isSelected) {
+        
+        self.drawView.userInteractionEnabled = NO;
+        
+    } else {
+        
+        self.drawView.userInteractionEnabled = YES;
+        
+    }
+    
+    //按钮状态改变
+    sender.selected = !sender.selected;
+    
+    
+    
+    
+}
+
+
+/**
+ *  截屏
+ *
+ *  @param sender sender
+ */
+- (IBAction)btnScreenshot:(UIButton *)sender {
+    
+    //按钮状态改变
+    [self buttonStateChangeWithButton:sender];
+    
+    //1.获取当前白板页码
+    //2.生成截图
+    //3.更改self.imgArray对应的图片
+    int pageNum = [self.drawView getCurrentPageNum];
+    
+    UIImage *newImage = [self getImage];
+    
+    [self.imgArray replaceObjectAtIndex:pageNum withObject:newImage];
+    [self screenAnimate];
+    
+}
+
+/**
+ *  屏闪动画
+ */
+- (void)screenAnimate {
+    
+    UIView *view = [[UIView alloc] initWithFrame:self.view.bounds];
+    view.backgroundColor = [UIColor blackColor];
+    
+    
+    [self.view addSubview:view];
+    
+    [UIView animateWithDuration:0.15 animations:^{
+        
+        view.alpha = 0;
+        
+    } completion:^(BOOL finished) {
+
+        [view removeFromSuperview];
+        
+    }];
+    
+    
+}
+
+
+
+
+
+
+/**
  *  添加按钮点击
  *
  *  @param sender
  */
 - (IBAction)btnAdd:(UIButton *)sender {
     
+//    [MBProgressHUD showError:@"暂不可用!"];
+    
     //按钮状态改变
     [self buttonStateChangeWithButton:sender];
+    
+    
+    //获取当前白板页数
+    int pageNum = [self.drawView getPageNum];
+    //添加白板页
+    [self.drawView pageControlWithPageNum:pageNum andControlType:1];
+    
+    
+    [self.imgArray addObject:[self getImage]];
+
+    
+    [self.client pageControlWithPageNum:(char)pageNum andControlType:1];
+    
     
 }
 /**
@@ -608,11 +900,19 @@
  */
 - (IBAction)btnDelete:(UIButton *)sender {
     
+//    [MBProgressHUD showError:@"暂不可用!"];
+    
+    
     //按钮状态改变
     [self buttonStateChangeWithButton:sender];
-//    SCMemberHeadView *headView = (SCMemberHeadView *)self.memberView.tableHeaderView;
-//    [headView viewWithTitle:@"5511" creater:@"4455" createTime:@"44555" memberCount:@"4545"];
-//    
+    
+    
+    int currentPage = [self.drawView getCurrentPageNum];
+
+    [self.drawView clear];
+    
+    [self.client cleanPageWithPageNum:currentPage];
+    
     
 }
 /**
@@ -628,7 +928,7 @@
     
 }
 
-- (void)sendImage:(UIImage *)image {
+- (void)sendImage:(UIImage *)image andRect:(CGRect)rect{
     
     NSData *originalData = UIImageJPEGRepresentation(image, 1.0);
     NSData *zipdata0 = UIImageJPEGRepresentation(image, 0.2);;
@@ -654,8 +954,8 @@
     /**对象位置*/
     pan.rcRect.left = 0;
     pan.rcRect.top = 0;
-    pan.rcRect.right = image.size.width;
-    pan.rcRect.bottom = image.size.height;
+    pan.rcRect.right = rect.size.width;
+    pan.rcRect.bottom = rect.size.height;
     
     
     /**数据大小*/
@@ -666,6 +966,9 @@
     NSMutableData *mudata = [NSMutableData data];
     [mudata appendData:datapre];
     [mudata appendData:zipData];
+    
+    
+    [self.drawView drawImageWithImage:image andPathID:pan.ObjID rect:rect];
     
     [self.client sendWhiteData:mudata];
 }
@@ -719,16 +1022,16 @@
 //    NSData *zipdata = UIImageJPEGRepresentation(image, 1.0);
     NSData *zipdata = [NSData dataWithContentsOfFile:@"/Users/sunluwei/Desktop/img.jpg"];
     
-    [self sendImage:image];
+    //[self sendImage:image];
     
     //NSData *data = UIImageJPEGRepresentation(image, 1);
     NSData *data = UIImagePNGRepresentation(image);
     //[data writeToFile:@"/Users/xiaomage/Desktop/photo.jpg" atomically:YES];
-    [data writeToFile:@"/Users/sunluwei/Desktop/photo.png" atomically:YES];
+//    [data writeToFile:@"/Users/sunluwei/Desktop/photo.png" atomically:YES];
     
     HandleImageView *handleV = [[HandleImageView alloc] init];
     handleV.backgroundColor = [UIColor clearColor];
-    handleV.frame = self.drawView.frame;
+    handleV.frame = CGRectMake(0, 0, image.size.width, image.size.height);
     handleV.image = image;
     handleV.delegate = self;
     [self.view addSubview:handleV];
@@ -737,6 +1040,27 @@
     //self.drawView.image = image;
     //取消弹出的系统相册
     [self dismissViewControllerAnimated:YES completion:nil];
+    
+    
+}
+
+- (void)handleImageView:(HandleImageView *)handleImageView newImage:(UIImage *)newImage {
+
+    NSLog(@"rect:%@",NSStringFromCGRect(handleImageView.ImgRect));
+    
+    [self sendImage:newImage andRect:handleImageView.ImgRect];
+    
+    
+}
+
+
+/**
+ *  释放该释放的
+ */
+- (void)dealloc {
+    
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     
 }

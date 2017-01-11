@@ -16,7 +16,7 @@
                         <animations/>
                     </navigationBar>
                     <connections>
-                        <segue destination="VRc-aO-p1S" kind="relationship" relationship="rootViewController" id="9Ca-2j-91E"/>
+                        <segue destination="Pun-Xi-AOk" kind="relationship" relationship="rootViewController" id="MDy-QT-5jV"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Fy-Br-pXK" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -26,7 +26,7 @@
         <!--View Controller-->
         <scene sceneID="BPQ-Cv-iDH">
             <objects>
-                <viewController id="Pun-Xi-AOk" customClass="ViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="vc" id="Pun-Xi-AOk" customClass="ViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="htx-44-qZ4"/>
                         <viewControllerLayoutGuide type="bottom" id="5xr-Ev-fO7"/>
@@ -34,38 +34,8 @@
                     <view key="view" contentMode="scaleToFill" id="ch8-nX-UWQ">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G0j-Gi-P97">
-                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Juq-nV-vGO" customClass="DrawView">
-                                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                        <animations/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="600" id="Foe-bS-OKF"/>
-                                            <constraint firstAttribute="width" constant="600" id="zDn-4P-WUk"/>
-                                        </constraints>
-                                    </view>
-                                </subviews>
-                                <animations/>
-                                <constraints>
-                                    <constraint firstItem="Juq-nV-vGO" firstAttribute="leading" secondItem="G0j-Gi-P97" secondAttribute="leading" id="2y2-7M-8Rg"/>
-                                    <constraint firstItem="Juq-nV-vGO" firstAttribute="top" secondItem="G0j-Gi-P97" secondAttribute="top" id="sOG-cr-W4g"/>
-                                </constraints>
-                                <connections>
-                                    <outlet property="delegate" destination="Pun-Xi-AOk" id="vVu-gO-TxF"/>
-                                </connections>
-                            </scrollView>
-                        </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="G0j-Gi-P97" firstAttribute="top" secondItem="htx-44-qZ4" secondAttribute="bottom" id="79s-is-5eP"/>
-                            <constraint firstAttribute="trailing" secondItem="G0j-Gi-P97" secondAttribute="trailing" id="Nwr-Tb-sh1"/>
-                            <constraint firstItem="5xr-Ev-fO7" firstAttribute="top" secondItem="G0j-Gi-P97" secondAttribute="bottom" id="ZQb-CW-pXJ"/>
-                            <constraint firstItem="G0j-Gi-P97" firstAttribute="leading" secondItem="ch8-nX-UWQ" secondAttribute="leading" id="oPY-f7-xu5"/>
-                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="0wI-0w-9Dy">
                         <nil key="title"/>
@@ -142,12 +112,32 @@
                                     </connections>
                                 </button>
                             </barButtonItem>
+                            <barButtonItem style="plain" id="1oX-8m-NkE">
+                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="faL-Qw-NQ2">
+                                    <rect key="frame" x="224" y="0.0" width="44" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <state key="normal" image="btn_cut.png"/>
+                                    <state key="selected" image="btn_cut_sel.png"/>
+                                    <connections>
+                                        <action selector="btnScreenshot:" destination="Pun-Xi-AOk" eventType="touchUpInside" id="KqZ-1S-GGh"/>
+                                    </connections>
+                                </button>
+                            </barButtonItem>
+                            <barButtonItem style="plain" id="qBe-5A-A0i">
+                                <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Ud8-OP-1IF">
+                                    <rect key="frame" x="172" y="0.0" width="44" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <state key="normal" image="btn_dzbb.png"/>
+                                    <state key="selected" image="btn_dzbb_sel.png"/>
+                                    <connections>
+                                        <action selector="btnScrollable:" destination="Pun-Xi-AOk" eventType="touchUpInside" id="wjq-Y9-lIe"/>
+                                    </connections>
+                                </button>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
-                    <connections>
-                        <outlet property="drawView" destination="Juq-nV-vGO" id="8Ue-wF-bdo"/>
-                        <outlet property="scrollView" destination="G0j-Gi-P97" id="cnD-oc-Ma4"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oQs-eK-ffF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -211,22 +201,21 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yEM-PP-nGA">
-                                <rect key="frame" x="216" y="216" width="46" height="30"/>
-                                <animations/>
-                                <color key="backgroundColor" red="0.89411764709999997" green="0.89411764709999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <state key="normal" title="登陆"/>
-                                <connections>
-                                    <action selector="btnLoginClick:" destination="VRc-aO-p1S" eventType="touchUpInside" id="ELR-hD-EZK"/>
-                                    <segue destination="Pun-Xi-AOk" kind="push" id="WuR-Jl-bae"/>
-                                </connections>
-                            </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="admin" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uE9-yu-vij">
                                 <rect key="frame" x="112" y="111" width="150" height="30"/>
                                 <animations/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yEM-PP-nGA">
+                                <rect key="frame" x="216" y="219" width="46" height="30"/>
+                                <animations/>
+                                <color key="backgroundColor" red="0.89411764709999997" green="0.89411764709999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="登陆"/>
+                                <connections>
+                                    <action selector="btnLoginClick:" destination="VRc-aO-p1S" eventType="touchUpInside" id="3kD-cM-OOX"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -249,8 +238,12 @@
         <image name="btn_add_pre.png" width="44" height="44"/>
         <image name="btn_chexiao.png" width="44" height="44"/>
         <image name="btn_chexiao_pre.png" width="44" height="44"/>
+        <image name="btn_cut.png" width="44" height="44"/>
+        <image name="btn_cut_sel.png" width="44" height="44"/>
         <image name="btn_del.png" width="44" height="44"/>
         <image name="btn_del_pre.png" width="44" height="44"/>
+        <image name="btn_dzbb.png" width="24" height="24"/>
+        <image name="btn_dzbb_sel.png" width="24" height="24"/>
         <image name="btn_img.png" width="44" height="44"/>
         <image name="btn_img_pre.png" width="44" height="44"/>
         <image name="btn_wenjian.png" width="44" height="44"/>
