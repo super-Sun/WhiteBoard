@@ -258,7 +258,7 @@
     
     DrawView *drawView = [[DrawView alloc] init];
     
-    drawView.frame = CGRectMake(0, 0, 600, 600);
+    drawView.frame = CGRectMake(0, 0, 1200, 1200);
     
     drawView.backgroundColor = [UIColor whiteColor];
     
