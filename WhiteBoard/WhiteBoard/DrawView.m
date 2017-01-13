@@ -902,7 +902,7 @@
         //切换白板页
         //1.根据pageNum切换成当前数组
         //2.刷新白板页
-        if (self.allPagePathArray.count == 0 || pageNum > self.allPagePathArray.count) {
+        if (pageNum >= self.allPagePathArray.count) {
             return;
         }
         

@@ -50,6 +50,9 @@
 @property (nonatomic, assign) int moveLength;
 
 @property (nonatomic, assign) BOOL isShow;
+
+@property (nonatomic, assign) long imgdataLength;
+
 /**存放截图*/
 @property (nonatomic, strong) NSMutableArray *imgArray;
 
@@ -255,7 +258,7 @@
     
     DrawView *drawView = [[DrawView alloc] init];
     
-    drawView.frame = CGRectMake(0, 0, 1200, 1200);
+    drawView.frame = CGRectMake(0, 0, 600, 600);
     
     drawView.backgroundColor = [UIColor whiteColor];
     
@@ -902,7 +905,6 @@
     
 //    [MBProgressHUD showError:@"暂不可用!"];
     
-    
     //按钮状态改变
     [self buttonStateChangeWithButton:sender];
     
@@ -928,14 +930,209 @@
     
 }
 
-- (void)sendImage:(UIImage *)image andRect:(CGRect)rect{
+/**
+ *  获取位图data
+ *
+ *  @param image 原始图片
+ *
+ *  @return data
+ */
+- (NSData *)getImageData:(UIImage *)image {
     
-    NSData *originalData = UIImageJPEGRepresentation(image, 1.0);
-    NSData *zipdata0 = UIImageJPEGRepresentation(image, 0.2);;
+    CGImageRef imgref = image.CGImage;
+    
+    int width = (int)CGImageGetWidth(imgref);
+    int height = (int)CGImageGetHeight(imgref);
+    int pixel = (int)CGImageGetBitsPerPixel(imgref);
+    
+    
+    NSLog(@"pixel:%d", pixel);
+    
+    NSData *headData = [self makeHeader:width :height];
+    
+    
+    unsigned char *img = [self convertUIImageToBitmapRGBA8:image];
+    
+    
+    NSData *bmpData = [NSData dataWithBytes:img length:self.imgdataLength / 4 * 3 / 8];
+    
+    NSMutableData *data = [NSMutableData dataWithData:headData];
+    
+    [data appendData:bmpData];
+    
+    [data writeToFile:@"/Users/sunluwei/Desktop/img.bmp" atomically:YES];
+    
+
+    return data;
+}
+
+
+/**bmp头部*/
+- (NSData *)makeHeader:(int)biWidth :(int)biHeight {
+    
+    BITMAP_FILE head;
+    
+    memset(&head, 0, sizeof(BITMAP_FILE));
+    
+    
+    head.bitmapheader.bfType = 0x4D42;
+//    head.bitmapheader.bfType2 = 'M';
+    
+    head.bitmapheader.bfOffBits = 0X00000036;
+    
+    head.bitmapheader.bfReserved1 = 0;
+    
+    head.bitmapheader.bfReserved2 = 0;
+    //这个位图文件的大小
+    head.bitmapheader.bfSize = biWidth * biHeight * 3 + 54;
+//    head.bitmapheader.bfSize = 54;
+    
+    head.bitmapinfoheader.biSize = 0x00000028;
+    
+    head.bitmapinfoheader.biWidth = biWidth;
+    
+    head.bitmapinfoheader.biHeight = biHeight;
+    
+    head.bitmapinfoheader.biPlanes = 1;
+    
+    head.bitmapinfoheader.biBitCount = 24;
+    
+    head.bitmapinfoheader.biCompression = 0;
+    
+    head.bitmapinfoheader.biSizeImage = biWidth * biHeight * 3;
+    
+    
+    return [NSData dataWithBytes:&head length:54];
+}
+
+
+- (CGContextRef)CreateARGBBitmapContext: (CGImageRef) inImage {
+    CGContextRef    context = NULL;
+    CGColorSpaceRef colorSpace;
+    void *          bitmapData;
+    int             bitmapByteCount;
+    int             bitmapBytesPerRow;
+    
+    size_t pixelsWide = CGImageGetWidth(inImage);
+    size_t pixelsHigh = CGImageGetHeight(inImage);
+    bitmapBytesPerRow   = (int)(pixelsWide * 3); //RGB
+    bitmapByteCount     = (int)(bitmapBytesPerRow * pixelsHigh);
+    colorSpace = CGColorSpaceCreateDeviceRGB();
+    
+    if (colorSpace == NULL)
+    {
+        fprintf(stderr, "Error allocating color space\n");
+        return NULL;
+    }
+    
+    // allocate the bitmap & create context
+    bitmapData = malloc( bitmapByteCount );
+    if (bitmapData == NULL)
+    {
+        fprintf (stderr, "Memory not allocated!");
+        CGColorSpaceRelease( colorSpace );
+        return NULL;
+    }
+    
+    context = CGBitmapContextCreate (bitmapData, pixelsWide, pixelsHigh, 8,
+                                     bitmapBytesPerRow, colorSpace,
+                                     kCGImageAlphaNone |kCGBitmapByteOrder16Big);
+    if (context == NULL)
+    {
+        free (bitmapData);
+        fprintf (stderr, "Context not created!");
+    }
+    
+    CGColorSpaceRelease( colorSpace );
+    return context;
+}
+
+
+
+
+- (void)sendImage:(UIImage *)image andRect:(CGRect)rect {
+    
+    
+    
+//    NSLog(@"%@")
+//    NSData *zipdata0 = UIImageJPEGRepresentation(image, 1.0);
+    
+    CGImageRef imgref = image.CGImage;
+    
+    int width = (int)CGImageGetWidth(imgref);
+    int height = (int)CGImageGetHeight(imgref);
+    
+//    unsigned char *img = [self convertUIImageToBitmapRGBA8:image];
+    
+    NSData *data = [self getImageData:image];
+    
+//    NSData *headData = [self makeHeader:width :height];
+    
+    
+    
+    
+//    NSData *data = [self getImageData:image];
+    
+    
+    NSLog(@"%ld", sizeof(imgref));
+    
+    NSData *zipData = [data customerGzippedData];
+    
+    
+    
+    struct ImageDraw pan;
+    //结构体内-清空多余空间
+    memset(&pan, 0, sizeof(struct ImageDraw));
+    
+    pan.commondID = 3;
+    pan.pageID = arc4random();
+    pan.ObjId = [self.drawView getCurrentPageNum];
+    pan.ObjType = 9;
+    
+    /**对象ID*/
+    pan.ObjID = pan.pageID;
+    
+    pan.dwSize = (int)zipData.length;
+    pan.dwUnSize = (int)data.length;
+    
+    /**对象位置*/
+    pan.rcRect.left = 0;
+    pan.rcRect.top = 0;
+    pan.rcRect.right = rect.size.width;
+    pan.rcRect.bottom = rect.size.height;
+    
+    
+    /**数据大小*/
+    pan.dwDataSize = (int)zipData.length + 28;
+    //用结构体去接收data数据
+    NSData *datapre = [NSData dataWithBytes:&pan length:48];
+    
+    NSMutableData *mudata = [NSMutableData data];
+    [mudata appendData:datapre];
+    [mudata appendData:zipData];
+    
+    
+    
+    [self.drawView drawImageWithImage:image andPathID:pan.ObjID rect:rect];
+    
+    [self.client sendWhiteData:mudata];
+    
+    
+}
+
+
+
+
+- (void)sendImage:(UIImage *)image andRect:(CGRect)rect byte:(unsigned char *)img{
+    
+
+//    NSData *zipdata0 = UIImageJPEGRepresentation(image, 0.2);
+    
+    NSData *zipdata0 = [NSData dataWithBytes:img length:4 * image.size.width * image.size.height];
     
     NSData *zipData = [zipdata0 customerGzippedData];
     
-    
+
     struct ImageDraw pan;
     //结构体内-清空多余空间
     memset(&pan, 0, sizeof(struct ImageDraw));
@@ -967,6 +1164,7 @@
     [mudata appendData:datapre];
     [mudata appendData:zipData];
     
+    NSLog(@"length:%ld, data0:%ld, img:%d", zipData.length, zipdata0.length, (int)sizeof(img));
     
     [self.drawView drawImageWithImage:image andPathID:pan.ObjID rect:rect];
     
@@ -1020,7 +1218,7 @@
     UIImage *image  = info[UIImagePickerControllerOriginalImage];
     
 //    NSData *zipdata = UIImageJPEGRepresentation(image, 1.0);
-    NSData *zipdata = [NSData dataWithContentsOfFile:@"/Users/sunluwei/Desktop/img.jpg"];
+    NSData *zipdata = [NSData dataWithContentsOfFile:@"/Users/sunluwei/Desktop/11.bmp"];
     
     //[self sendImage:image];
     
@@ -1033,6 +1231,8 @@
     handleV.backgroundColor = [UIColor clearColor];
     handleV.frame = CGRectMake(0, 0, image.size.width, image.size.height);
     handleV.image = image;
+    
+    
     handleV.delegate = self;
     [self.view addSubview:handleV];
     
@@ -1044,9 +1244,222 @@
     
 }
 
+
+- (CGContextRef) newBitmapRGBA8ContextFromImage:(CGImageRef) image {
+    
+    CGContextRef context = NULL;
+    CGColorSpaceRef colorSpace;
+    char *bitmapData;
+    
+ 
+    size_t bitsPerComponent = 8;
+    size_t bytesPerPixel = 4;
+    
+    size_t width = CGImageGetWidth(image);
+    size_t height = CGImageGetHeight(image);
+    
+    size_t bytesPerRow = width * bytesPerPixel;
+    size_t bufferLength = bytesPerRow * height;
+    
+    colorSpace = CGColorSpaceCreateDeviceRGB();
+    
+    if(!colorSpace) {
+        NSLog(@"Error allocating color space RGB\n");
+        return NULL;
+    }
+    
+    // Allocate memory for image data
+    bitmapData = (char *)malloc(bufferLength);
+    
+    if(!bitmapData) {
+        NSLog(@"Error allocating memory for bitmap\n");
+        CGColorSpaceRelease(colorSpace);
+        return NULL;
+    }
+    
+    //Create bitmap context
+
+    context = CGBitmapContextCreate(bitmapData,
+                                    width,
+                                    height,
+                                    bitsPerComponent,
+                                    bytesPerRow,
+                                    colorSpace, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Big);	// ARGB
+    
+    
+    
+    if(!context) {
+        free(bitmapData);
+        NSLog(@"Bitmap context not created");
+    }
+        
+    CGColorSpaceRelease(colorSpace);
+    
+    return context;	
+}
+
+
+
+/**
+ *  得到位图void *data
+ *
+ *  @param image image
+ *
+ *  @return *data
+ */
+- (unsigned char *) convertUIImageToBitmapRGBA8:(UIImage *) image {
+    
+    CGImageRef imageRef = image.CGImage;
+    
+    // Create a bitmap context to draw the uiimage into
+    CGContextRef context = [self newBitmapRGBA8ContextFromImage:imageRef];
+    
+    if(!context) {
+        return NULL;
+    }
+    
+    size_t width = CGImageGetWidth(imageRef);
+    size_t height = CGImageGetHeight(imageRef);
+    
+    CGRect rect = CGRectMake(0, 0, width, height);
+    
+    // Draw image into the context to get the raw image data
+    CGContextDrawImage(context, rect, imageRef);
+    // Get a pointer to the data
+    unsigned char *bitmapData = (unsigned char *)CGBitmapContextGetData(context);
+    
+    // Copy the data and release the memory (return memory allocated with new)
+    size_t bytesPerRow = CGBitmapContextGetBytesPerRow(context);
+    size_t bufferLength = bytesPerRow * height;
+    
+    self.imgdataLength = bufferLength;
+    
+    unsigned char *newBitmap = NULL;
+    
+    if(bitmapData) {
+        
+        newBitmap = (unsigned char *)malloc(sizeof(unsigned char) * bytesPerRow * height / 4 * 3);
+        
+        if(newBitmap) {	// Copy the data
+            NSLog(@"bufferLength:%ld", bufferLength);
+
+            for(int i = 0; i < bufferLength / 4; i++) {
+                
+                newBitmap[3 * i] = bitmapData[4 * i + 0];
+                newBitmap[3 * i + 1] = bitmapData[4 * i + 1];
+                newBitmap[3 * i + 2] = bitmapData[4 * i + 2];
+                
+            }
+        }
+        
+        free(bitmapData);
+        
+    } else {
+        NSLog(@"Error getting bitmap pixel data\n");
+    }
+    
+    CGContextRelease(context);
+    
+    return newBitmap;	
+}
+
+
+- (UIImage *) convertBitmapRGBA8ToUIImage:(unsigned char *) buffer
+                                withWidth:(int) width
+                               withHeight:(int) height {
+    
+    
+    size_t bufferLength = width * height * 3;
+    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, buffer, bufferLength, NULL);
+    size_t bitsPerComponent = 8;
+    size_t bitsPerPixel = 24;
+    size_t bytesPerRow = 3 * width;
+    
+    CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+    if(colorSpaceRef == NULL) {
+        NSLog(@"Error allocating color space");
+        CGDataProviderRelease(provider);
+        return nil;
+    }
+    
+    CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
+    CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
+    
+    CGImageRef iref = CGImageCreate(width,
+                                    height,
+                                    bitsPerComponent,
+                                    bitsPerPixel,
+                                    bytesPerRow,
+                                    colorSpaceRef,
+                                    bitmapInfo,
+                                    provider,	// data provider
+                                    NULL,		// decode
+                                    YES,			// should interpolate
+                                    renderingIntent);
+    
+    char *pixels = (char *)malloc(bufferLength);
+    
+    if(pixels == NULL) {
+        NSLog(@"Error: Memory not allocated for bitmap");
+        CGDataProviderRelease(provider);
+        CGColorSpaceRelease(colorSpaceRef);
+        CGImageRelease(iref);
+        return nil;
+    }
+    
+    CGContextRef context = CGBitmapContextCreate(pixels,
+                                                 width,
+                                                 height,
+                                                 bitsPerComponent,
+                                                 bytesPerRow,
+                                                 colorSpaceRef,
+                                                 kCGImageAlphaNone);
+    
+    if(context == NULL) {
+        NSLog(@"Error context not created");
+        free(pixels);
+    }
+    
+    UIImage *image = nil;
+    if(context) {
+        
+        CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, width, height), iref);
+        
+        CGImageRef imageRef = CGBitmapContextCreateImage(context);
+        
+        // Support both iPad 3.2 and iPhone 4 Retina displays with the correct scale
+        if([UIImage respondsToSelector:@selector(imageWithCGImage:scale:orientation:)]) {
+            float scale = [[UIScreen mainScreen] scale];
+            image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
+        } else {
+            image = [UIImage imageWithCGImage:imageRef];
+        }
+        
+        CGImageRelease(imageRef);	
+        CGContextRelease(context);	
+    }
+    
+    CGColorSpaceRelease(colorSpaceRef);
+    CGImageRelease(iref);
+    CGDataProviderRelease(provider);
+    
+    if(pixels) {
+        free(pixels);
+    }	
+    return image;
+}
+
+#pragma mark-handleImageViewDelegate-
 - (void)handleImageView:(HandleImageView *)handleImageView newImage:(UIImage *)newImage {
 
     NSLog(@"rect:%@",NSStringFromCGRect(handleImageView.ImgRect));
+    
+//    unsigned char *img = [self convertUIImageToBitmapRGBA8:newImage];
+    
+//    NSData *imgData = [NSData dataWithBytes:img length:sizeof(img)];
+//
+//    newImage = [self convertBitmapRGBA8ToUIImage:img withWidth:newImage.size.width withHeight:newImage.size.height];
+//    UIImage *image = [self convertBitmapRGBA8ToUIImage:img withWidth:handleImageView.ImgRect.size.width withHeight:handleImageView.ImgRect.size.height];
     
     [self sendImage:newImage andRect:handleImageView.ImgRect];
     

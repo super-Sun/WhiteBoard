@@ -16,7 +16,7 @@
                         <animations/>
                     </navigationBar>
                     <connections>
-                        <segue destination="Pun-Xi-AOk" kind="relationship" relationship="rootViewController" id="MDy-QT-5jV"/>
+                        <segue destination="VRc-aO-p1S" kind="relationship" relationship="rootViewController" id="abp-JP-3Uc"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Fy-Br-pXK" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -238,8 +238,8 @@
         <image name="btn_add_pre.png" width="44" height="44"/>
         <image name="btn_chexiao.png" width="44" height="44"/>
         <image name="btn_chexiao_pre.png" width="44" height="44"/>
-        <image name="btn_cut.png" width="44" height="44"/>
-        <image name="btn_cut_sel.png" width="44" height="44"/>
+        <image name="btn_cut.png" width="22" height="22"/>
+        <image name="btn_cut_sel.png" width="22" height="22"/>
         <image name="btn_del.png" width="44" height="44"/>
         <image name="btn_del_pre.png" width="44" height="44"/>
         <image name="btn_dzbb.png" width="24" height="24"/>

@@ -140,7 +140,7 @@
                 //调用代理方法
                 if([self.delegate respondsToSelector:@selector(handleImageView:newImage:)]) {
                     
-                    [self.delegate handleImageView:self newImage:newImage];
+                    [self.delegate handleImageView:self newImage:self.imageV.image];
                 }
                 
                 //从父控件当中移除

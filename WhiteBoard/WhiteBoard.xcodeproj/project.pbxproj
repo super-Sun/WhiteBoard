@@ -18,6 +18,7 @@
 		0D2085B01E10C63200E668A0 /* SCMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D2085AF1E10C63200E668A0 /* SCMember.m */; };
 		0D2085BB1E11151400E668A0 /* SCMemberHeadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D2085B91E11151400E668A0 /* SCMemberHeadView.m */; };
 		0D2085BC1E11151400E668A0 /* SCMemberHeadView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0D2085BA1E11151400E668A0 /* SCMemberHeadView.xib */; };
+		0D2342E91E2781F9008F242E /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D2342E81E2781F9008F242E /* CoreImage.framework */; };
 		0D29FF9D1E08E45400FA43B4 /* LoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D29FF9C1E08E45400FA43B4 /* LoginController.m */; };
 		0DAB40091E02901300C2B737 /* btn_qhhm_sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0DAB3FEA1E02901300C2B737 /* btn_qhhm_sel@2x.png */; };
 		0DAB400A1E02901300C2B737 /* btn_tool@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0DAB3FEB1E02901300C2B737 /* btn_tool@2x.png */; };
@@ -64,6 +65,7 @@
 		0DAB40511E02AA5D00C2B737 /* MyBezierPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DAB404B1E02AA5D00C2B737 /* MyBezierPath.m */; };
 		0DAB40521E02AA5D00C2B737 /* SCConst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DAB404D1E02AA5D00C2B737 /* SCConst.m */; };
 		0DB39C151E1B562100A20A2C /* btn_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 0DB39C141E1B562100A20A2C /* btn_bg.png */; };
+		0DB8AD6E1E28CA9800321359 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0DB8AD6D1E28CA9800321359 /* CoreGraphics.framework */; };
 		0DBC98CB1E2623B7007A7A7D /* FileListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DBC98CA1E2623B7007A7A7D /* FileListController.m */; };
 		0DBC98D11E2623D1007A7A7D /* FlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DBC98CD1E2623D1007A7A7D /* FlowLayout.m */; };
 		0DBC98D21E2623D1007A7A7D /* PhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DBC98CF1E2623D1007A7A7D /* PhotoCell.m */; };
@@ -120,6 +122,7 @@
 		0D2085B81E11151400E668A0 /* SCMemberHeadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCMemberHeadView.h; sourceTree = "<group>"; };
 		0D2085B91E11151400E668A0 /* SCMemberHeadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCMemberHeadView.m; sourceTree = "<group>"; };
 		0D2085BA1E11151400E668A0 /* SCMemberHeadView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SCMemberHeadView.xib; sourceTree = "<group>"; };
+		0D2342E81E2781F9008F242E /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
 		0D29FF9B1E08E45400FA43B4 /* LoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginController.h; sourceTree = "<group>"; };
 		0D29FF9C1E08E45400FA43B4 /* LoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginController.m; sourceTree = "<group>"; };
 		0DAB3FEA1E02901300C2B737 /* btn_qhhm_sel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "btn_qhhm_sel@2x.png"; sourceTree = "<group>"; };
@@ -180,6 +183,7 @@
 		0DAB404C1E02AA5D00C2B737 /* SCConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCConst.h; sourceTree = "<group>"; };
 		0DAB404D1E02AA5D00C2B737 /* SCConst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCConst.m; sourceTree = "<group>"; };
 		0DB39C141E1B562100A20A2C /* btn_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = btn_bg.png; sourceTree = "<group>"; };
+		0DB8AD6D1E28CA9800321359 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		0DBC98C91E2623B7007A7A7D /* FileListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileListController.h; sourceTree = "<group>"; };
 		0DBC98CA1E2623B7007A7A7D /* FileListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileListController.m; sourceTree = "<group>"; };
 		0DBC98CC1E2623D1007A7A7D /* FlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlowLayout.h; sourceTree = "<group>"; };
@@ -218,6 +222,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0DB8AD6E1E28CA9800321359 /* CoreGraphics.framework in Frameworks */,
+				0D2342E91E2781F9008F242E /* CoreImage.framework in Frameworks */,
 				F8BE423282BB170D367EE70D /* libPods-WhiteBoard.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -437,6 +443,8 @@
 		5D778C6D8CF78FD3ABED4143 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0DB8AD6D1E28CA9800321359 /* CoreGraphics.framework */,
+				0D2342E81E2781F9008F242E /* CoreImage.framework */,
 				239B9360FA5BA158B18FAF1F /* libPods-WhiteBoard.a */,
 			);
 			name = Frameworks;

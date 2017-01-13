@@ -256,4 +256,7 @@ static void *libzOpen()
     return (self.length >= 2 && bytes[0] == 0x1f && bytes[1] == 0x8b);
 }
 
+
+
+
 @end
